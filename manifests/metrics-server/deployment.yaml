@@ -62,7 +62,7 @@ spec:
       volumes:
       - name: config
         configMap:
-          name: argocd-metrics-server
+          name: argocd-metrics-server-configmap
       securityContext:
         runAsNonRoot: true
         runAsUser: 999
