@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-metrics-server-configmap
+data:
+  # Metrics for Deployments
+  extension.metrics.deployments: |
+    - name: "CPU Usage"
+      description: "CPU usage for the deployment"
+      type: "graph"
+      graphType: "area"
+      yAxisLabel: "CPU Cores"
+      query: 'sum(rate(container_cpu_usage_seconds_total{namespace="{{.metadata.namespace}}", pod=~"{{.metadata.name}}-.*"}[5m])) by (pod)'
+
+    - name: "Memory Usage"
+      description: "Memory usage for the deployment"
+      type: "graph"
+      graphType: "area"
+      yAxisLabel: "Memory (MB)"
+      query: 'sum(container_memory_working_set_bytes{namespace="{{.metadata.namespace}}", pod=~"{{.metadata.name}}-.*"}) by (pod) / 1024 / 1024'
+
+    - name: "Network Received"
+      description: "Network bytes received"
+      type: "graph"
+      graphType: "line"
+      yAxisLabel: "Bytes/sec"
+      query: 'sum(rate(container_network_receive_bytes_total{namespace="{{.metadata.namespace}}", pod=~"{{.metadata.name}}-.*"}[5m])) by (pod)'
+
+  # Metrics for Pods
+  extension.metrics.pods: |
+    - name: "CPU Usage"
+      description: "CPU usage for the pod"
+      type: "graph"
+      graphType: "area"
+      yAxisLabel: "CPU Cores"
+      query: 'sum(rate(container_cpu_usage_seconds_total{namespace="{{.metadata.namespace}}", pod="{{.metadata.name}}"}[5m])) by (container)'
+
+    - name: "Memory Usage"
+      description: "Memory usage for the pod"
+      type: "graph"
+      graphType: "area"
+      yAxisLabel: "Memory (MB)"
+      query: 'sum(container_memory_working_set_bytes{namespace="{{.metadata.namespace}}", pod="{{.metadata.name}}"}) by (container) / 1024 / 1024'
+
+    - name: "Container Restarts"
+      description: "Number of container restarts"
+      type: "graph"
+      graphType: "line"
+      yAxisLabel: "Restarts"
+      query: 'kube_pod_container_status_restarts_total{namespace="{{.metadata.namespace}}", pod="{{.metadata.name}}"}'
+
+  # Prometheus connection
+  prometheus.url: "http://prometheus-kube-prometheus-prometheus.monitoring.svc:9090"
