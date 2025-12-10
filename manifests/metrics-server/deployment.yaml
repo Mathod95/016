@@ -37,12 +37,6 @@ spec:
       - name: argocd-metrics-server
         image: quay.io/argoprojlabs/argocd-extension-metrics:v1.0.3
         imagePullPolicy: IfNotPresent
-        command:
-        - /app/argocd-extension-metrics
-        - backend
-        - start
-        - --port=9003
-        - --config=/etc/config/config.yaml
         ports:
         - containerPort: 9003
           name: http
