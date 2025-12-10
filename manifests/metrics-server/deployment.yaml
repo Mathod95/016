@@ -3,7 +3,8 @@ kind: Service
 metadata:
   name: argocd-metrics-server
   labels:
-    app: argocd-metrics-server
+    app.kubernetes.io/name: argocd-metrics-server
+    app.kubernetes.io/part-of: argocd
 spec:
   ports:
   - name: http
@@ -11,41 +12,44 @@ spec:
     protocol: TCP
     targetPort: 9003
   selector:
-    app: argocd-metrics-server
+    app.kubernetes.io/name: argocd-metrics-server
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: argocd-metrics-server
   labels:
-    app: argocd-metrics-server
+    app.kubernetes.io/name: argocd-metrics-server
+    app.kubernetes.io/part-of: argocd
+    app.kubernetes.io/component: metrics-server
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: argocd-metrics-server
+      app.kubernetes.io/name: argocd-metrics-server
   template:
     metadata:
       labels:
-        app: argocd-metrics-server
+        app.kubernetes.io/name: argocd-metrics-server
     spec:
+      serviceAccountName: argocd-server
       containers:
       - name: argocd-metrics-server
         image: quay.io/argoprojlabs/argocd-extension-metrics:v1.0.3
         imagePullPolicy: IfNotPresent
+        command:
+        - /app/argocd-extension-metrics
+        - backend
+        - start
+        - --port=9003
+        - --config=/etc/config/config.yaml
         ports:
         - containerPort: 9003
           name: http
           protocol: TCP
-        env:
-        - name: PROMETHEUS_URL
-          valueFrom:
-            configMapKeyRef:
-              name: argocd-metrics-server-configmap
-              key: prometheus.url
         volumeMounts:
         - name: config
-          mountPath: /etc/argocd-metrics-server/
+          mountPath: /etc/config
         resources:
           limits:
             cpu: 100m
@@ -60,14 +64,14 @@ spec:
             - ALL
           readOnlyRootFilesystem: true
           runAsNonRoot: true
-          runAsUser: 1000
+          runAsUser: 999
       volumes:
       - name: config
         configMap:
-          name: argocd-metrics-server-configmap
+          name: argocd-metrics-server
       securityContext:
         runAsNonRoot: true
-        runAsUser: 1000
-        fsGroup: 1000
+        runAsUser: 999
+        fsGroup: 999
         seccompProfile:
           type: RuntimeDefault

@@ -8,6 +8,6 @@ resources:
   - deployment.yaml
 
 commonLabels:
-  app: argocd-metrics-server
   app.kubernetes.io/name: argocd-metrics-server
+  app.kubernetes.io/part-of: argocd
   app.kubernetes.io/component: metrics-server
