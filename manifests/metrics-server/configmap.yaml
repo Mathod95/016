@@ -2,8 +2,9 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: argocd-metrics-server-configmap
+  namespace: argocd
 data:
-  # Metrics for Deployments
+  # Define metrics for Deployments
   extension.metrics.deployments: |
     - name: "CPU Usage"
       description: "CPU usage for the deployment"
@@ -26,7 +27,7 @@ data:
       yAxisLabel: "Bytes/sec"
       query: 'sum(rate(container_network_receive_bytes_total{namespace="{{.metadata.namespace}}", pod=~"{{.metadata.name}}-.*"}[5m])) by (pod)'
 
-  # Metrics for Pods
+  # Define metrics for Pods
   extension.metrics.pods: |
     - name: "CPU Usage"
       description: "CPU usage for the pod"
@@ -49,5 +50,5 @@ data:
       yAxisLabel: "Restarts"
       query: 'kube_pod_container_status_restarts_total{namespace="{{.metadata.namespace}}", pod="{{.metadata.name}}"}'
 
-  # Prometheus connection
+  # Prometheus connection settings
   prometheus.url: "http://prometheus-kube-prometheus-prometheus.monitoring.svc:9090"
