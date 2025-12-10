@@ -5,300 +5,343 @@ metadata:
 data:
   config.json: |
     {
-    "prometheus": {
-      "applications": [
-        {
+      "prometheus": {
+        "applications": [
+          {
+            "name": "default",
+            "default": true,
+            "dashboards": [
+              {
+                "groupKind": "pod",
+                "tabs": ["Golden Signal", "Resource Usage", "Network", "Storage"],
+                "rows": [
+                  {
+                    "name": "pod_cpu",
+                    "title": "CPU Usage",
+                    "tab": "Golden Signal",
+                    "graphs": [
+                      {
+                        "name": "pod_cpu_line",
+                        "title": "CPU Usage",
+                        "description": "CPU usage by pod over time",
+                        "graphType": "line",
+                        "metricName": "pod",
+                        "queryExpression": "sum(rate(container_cpu_usage_seconds_total{pod=~\"{{.name}}\", image!=\"\", container!=\"POD\", container!=\"\"}[5m])) by (pod)"
+                      },
+                      {
+                        "name": "pod_cpu_pie",
+                        "title": "CPU Distribution",
+                        "description": "Average CPU distribution",
+                        "graphType": "pie",
+                        "metricName": "pod",
+                        "queryExpression": "avg(rate(container_cpu_usage_seconds_total{pod=~\"{{.name}}\", container!=\"POD\", image!=\"\", container!=\"\"}[5m])) by (pod)"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "pod_memory",
+                    "title": "Memory Usage",
+                    "tab": "Golden Signal",
+                    "graphs": [
+                      {
+                        "name": "pod_memory_line",
+                        "title": "Memory Usage",
+                        "description": "Memory usage by pod over time",
+                        "graphType": "line",
+                        "metricName": "pod",
+                        "queryExpression": "sum(container_memory_usage_bytes{pod=~\"{{.name}}\", container!=\"POD\", image!=\"\", container!=\"\"}) by (pod)"
+                      },
+                      {
+                        "name": "pod_memory_pie",
+                        "title": "Memory Distribution",
+                        "description": "Average memory distribution",
+                        "graphType": "pie",
+                        "metricName": "pod",
+                        "queryExpression": "avg(container_memory_usage_bytes{pod=~\"{{.name}}\", container!=\"POD\", image!=\"\", container!=\"\"}) by (pod)"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "cpu_throttling",
+                    "title": "CPU Throttling",
+                    "tab": "Resource Usage",
+                    "graphs": [
+                      {
+                        "name": "cpu_throttle_line",
+                        "title": "CPU Throttling",
+                        "description": "CPU throttling periods",
+                        "graphType": "line",
+                        "metricName": "pod",
+                        "queryExpression": "sum(rate(container_cpu_cfs_throttled_periods_total{pod=~\"{{.name}}\", container!=\"POD\", container!=\"\"}[5m])) by (pod)"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "memory_working_set",
+                    "title": "Memory Working Set",
+                    "tab": "Resource Usage",
+                    "graphs": [
+                      {
+                        "name": "memory_working_set_line",
+                        "title": "Memory Working Set",
+                        "description": "Active memory in use",
+                        "graphType": "line",
+                        "metricName": "pod",
+                        "queryExpression": "sum(container_memory_working_set_bytes{pod=~\"{{.name}}\", container!=\"POD\", container!=\"\"}) by (pod)"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "memory_cache",
+                    "title": "Memory Cache",
+                    "tab": "Resource Usage",
+                    "graphs": [
+                      {
+                        "name": "memory_cache_line",
+                        "title": "Memory Cache",
+                        "description": "Cached memory",
+                        "graphType": "line",
+                        "metricName": "pod",
+                        "queryExpression": "sum(container_memory_cache{pod=~\"{{.name}}\", container!=\"POD\", container!=\"\"}) by (pod)"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "network_receive",
+                    "title": "Network Receive",
+                    "tab": "Network",
+                    "graphs": [
+                      {
+                        "name": "network_receive_bytes",
+                        "title": "Network Receive Bytes/sec",
+                        "description": "Network bytes received per second",
+                        "graphType": "line",
+                        "metricName": "pod",
+                        "queryExpression": "sum(rate(container_network_receive_bytes_total{pod=~\"{{.name}}\"}[5m])) by (pod)"
+                      },
+                      {
+                        "name": "network_receive_packets",
+                        "title": "Network Receive Packets/sec",
+                        "description": "Network packets received per second",
+                        "graphType": "line",
+                        "metricName": "pod",
+                        "queryExpression": "sum(rate(container_network_receive_packets_total{pod=~\"{{.name}}\"}[5m])) by (pod)"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "network_transmit",
+                    "title": "Network Transmit",
+                    "tab": "Network",
+                    "graphs": [
+                      {
+                        "name": "network_transmit_bytes",
+                        "title": "Network Transmit Bytes/sec",
+                        "description": "Network bytes transmitted per second",
+                        "graphType": "line",
+                        "metricName": "pod",
+                        "queryExpression": "sum(rate(container_network_transmit_bytes_total{pod=~\"{{.name}}\"}[5m])) by (pod)"
+                      },
+                      {
+                        "name": "network_transmit_packets",
+                        "title": "Network Transmit Packets/sec",
+                        "description": "Network packets transmitted per second",
+                        "graphType": "line",
+                        "metricName": "pod",
+                        "queryExpression": "sum(rate(container_network_transmit_packets_total{pod=~\"{{.name}}\"}[5m])) by (pod)"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "network_errors",
+                    "title": "Network Errors",
+                    "tab": "Network",
+                    "graphs": [
+                      {
+                        "name": "network_receive_errors",
+                        "title": "Network Receive Errors",
+                        "description": "Network receive errors",
+                        "graphType": "line",
+                        "metricName": "pod",
+                        "queryExpression": "sum(rate(container_network_receive_errors_total{pod=~\"{{.name}}\"}[5m])) by (pod)"
+                      },
+                      {
+                        "name": "network_transmit_errors",
+                        "title": "Network Transmit Errors",
+                        "description": "Network transmit errors",
+                        "graphType": "line",
+                        "metricName": "pod",
+                        "queryExpression": "sum(rate(container_network_transmit_errors_total{pod=~\"{{.name}}\"}[5m])) by (pod)"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "fs_reads",
+                    "title": "Filesystem Reads",
+                    "tab": "Storage",
+                    "graphs": [
+                      {
+                        "name": "fs_read_bytes",
+                        "title": "Filesystem Read Bytes/sec",
+                        "description": "Filesystem bytes read per second",
+                        "graphType": "line",
+                        "metricName": "pod",
+                        "queryExpression": "sum(rate(container_fs_reads_bytes_total{pod=~\"{{.name}}\", container!=\"POD\", container!=\"\"}[5m])) by (pod)"
+                      },
+                      {
+                        "name": "fs_reads_total",
+                        "title": "Filesystem Reads/sec",
+                        "description": "Filesystem read operations per second",
+                        "graphType": "line",
+                        "metricName": "pod",
+                        "queryExpression": "sum(rate(container_fs_reads_total{pod=~\"{{.name}}\", container!=\"POD\", container!=\"\"}[5m])) by (pod)"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "fs_writes",
+                    "title": "Filesystem Writes",
+                    "tab": "Storage",
+                    "graphs": [
+                      {
+                        "name": "fs_write_bytes",
+                        "title": "Filesystem Write Bytes/sec",
+                        "description": "Filesystem bytes written per second",
+                        "graphType": "line",
+                        "metricName": "pod",
+                        "queryExpression": "sum(rate(container_fs_writes_bytes_total{pod=~\"{{.name}}\", container!=\"POD\", container!=\"\"}[5m])) by (pod)"
+                      },
+                      {
+                        "name": "fs_writes_total",
+                        "title": "Filesystem Writes/sec",
+                        "description": "Filesystem write operations per second",
+                        "graphType": "line",
+                        "metricName": "pod",
+                        "queryExpression": "sum(rate(container_fs_writes_total{pod=~\"{{.name}}\", container!=\"POD\", container!=\"\"}[5m])) by (pod)"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "fs_usage",
+                    "title": "Filesystem Usage",
+                    "tab": "Storage",
+                    "graphs": [
+                      {
+                        "name": "fs_usage_bytes",
+                        "title": "Filesystem Usage",
+                        "description": "Filesystem space used",
+                        "graphType": "line",
+                        "metricName": "pod",
+                        "queryExpression": "sum(container_fs_usage_bytes{pod=~\"{{.name}}\", container!=\"POD\", container!=\"\"}) by (pod)"
+                      },
+                      {
+                        "name": "fs_limit_bytes",
+                        "title": "Filesystem Limit",
+                        "description": "Filesystem capacity",
+                        "graphType": "line",
+                        "metricName": "pod",
+                        "queryExpression": "sum(container_fs_limit_bytes{pod=~\"{{.name}}\", container!=\"POD\", container!=\"\"}) by (pod)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "groupKind": "deployment",
+                "tabs": ["Application Metrics", "Resource Usage"],
+                "rows": [
+                  {
+                    "name": "http_latency",
+                    "title": "HTTP Latency",
+                    "tab": "Application Metrics",
+                    "graphs": [
+                      {
+                        "name": "http_200_latency",
+                        "title": "HTTP 200 Latency",
+                        "description": "HTTP request latency for successful requests",
+                        "graphType": "line",
+                        "metricName": "pod_template_hash",
+                        "queryExpression": "sum(rate(http_server_requests_seconds_sum{namespace=\"{{.namespace}}\", status=\"200\"}[1m])) by (pod_template_hash)"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "http_error_rate",
+                    "title": "HTTP Error Rate",
+                    "tab": "Application Metrics",
+                    "graphs": [
+                      {
+                        "name": "http_error_rate_500",
+                        "title": "HTTP 5xx Errors",
+                        "description": "HTTP 5xx server errors",
+                        "graphType": "line",
+                        "metricName": "pod_template_hash",
+                        "queryExpression": "sum(rate(http_server_requests_seconds_count{namespace=\"{{.namespace}}\", status=~\"5..\"}[1m])) by (pod_template_hash)"
+                      },
+                      {
+                        "name": "http_error_rate_400",
+                        "title": "HTTP 4xx Errors",
+                        "description": "HTTP 4xx client errors",
+                        "graphType": "line",
+                        "metricName": "pod_template_hash",
+                        "queryExpression": "sum(rate(http_server_requests_seconds_count{namespace=\"{{.namespace}}\", status=~\"4..\"}[1m])) by (pod_template_hash)"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "http_traffic",
+                    "title": "HTTP Traffic",
+                    "tab": "Application Metrics",
+                    "graphs": [
+                      {
+                        "name": "http_traffic",
+                        "title": "Request Rate",
+                        "description": "HTTP requests per second",
+                        "graphType": "line",
+                        "metricName": "pod_template_hash",
+                        "queryExpression": "sum(rate(http_server_requests_seconds_count{namespace=\"{{.namespace}}\"}[1m])) by (pod_template_hash)"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "deployment_cpu",
+                    "title": "CPU Usage",
+                    "tab": "Resource Usage",
+                    "graphs": [
+                      {
+                        "name": "deployment_cpu_line",
+                        "title": "CPU Usage",
+                        "description": "CPU usage by deployment",
+                        "graphType": "line",
+                        "metricName": "pod",
+                        "queryExpression": "sum(rate(container_cpu_usage_seconds_total{namespace=\"{{.namespace}}\", pod=~\"{{.name}}.*\", image!=\"\", container!=\"POD\"}[5m])) by (pod)"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "deployment_memory",
+                    "title": "Memory Usage",
+                    "tab": "Resource Usage",
+                    "graphs": [
+                      {
+                        "name": "deployment_memory_line",
+                        "title": "Memory Usage",
+                        "description": "Memory usage by deployment",
+                        "graphType": "line",
+                        "metricName": "pod",
+                        "queryExpression": "sum(container_memory_usage_bytes{namespace=\"{{.namespace}}\", pod=~\"{{.name}}.*\", container!=\"POD\", container!=\"\"}) by (pod)"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "provider": {
           "name": "default",
           "default": true,
-          "dashboards": [
-            {
-              "groupKind": "pod",
-              "tabs": ["Golden Signal"],
-              "rows": [
-                    {
-                  "name": "pod",
-                  "title": "Pods",
-                  "tab": "Golden Signal",
-                  "graphs": [
-                    {
-                      "name": "pod_cpu_line",
-                      "title": "CPU",
-                      "description": "",
-                      "graphType": "line",
-                      "metricName": "pod",
-                      "queryExpression": "sum(rate(container_cpu_usage_seconds_total{pod=~\"{{.name}}\", image!=\"\", container!=\"POD\", container!=\"\", container_name!=\"POD\"}[5m])) by (pod)"
-                    },
-                    {
-                      "name": "pod_cpu_pie",
-                      "title": "CPU Avg",
-                      "description": "",
-                      "graphType": "pie",
-                      "metricName": "pod",
-                      "queryExpression": "sum(rate(container_cpu_usage_seconds_total{pod=~\"{{.name}}\", container!=\"POD\", image!=\"\", container!=\"\", container_name!=\"POD\"}[5m])) by (pod)"
-                    },
-                    {
-                      "name": "pod_memory_line",
-                      "title": "Memory",
-                      "description": "",
-                      "graphType": "line",
-                      "metricName": "pod",
-                      "queryExpression": "sum(rate(container_memory_usage_bytes{pod=~\"{{.name}}\", container!=\"POD\", image!=\"\", container!=\"\", container_name!=\"POD\"}[5m])) by (pod)"
-                    },
-                    {
-                      "name": "pod_memory_pie",
-                      "title": "Mem Avg",
-                      "description": "",
-                      "graphType": "pie",
-                      "metricName": "pod",
-                      "queryExpression": "sum(rate(container_memory_usage_bytes{pod=~\"{{.name}}\", container!=\"POD\", image!=\"\", container!=\"\", container_name!=\"POD\"}[5m])) by (pod)"
-                    }
-                  ]
-                },
-                {
-                  "name": "container",
-                  "title": "Containers",
-                  "tab": "Golden Signal",
-                  "graphs": [
-                    {
-                      "name": "container_cpu_line",
-                      "title": "CPU",
-                      "description": "",
-                      "graphType": "line",
-                      "metricName": "container",
-                      "queryExpression": "sum(rate(container_cpu_usage_seconds_total{pod=~\"{{.name}}\", image!=\"\", container!=\"POD\", container!=\"\", container_name!=\"POD\"}[5m])) by (container)"
-                    },
-                    {
-                      "name": "container_cpu_pie",
-                      "title": "CPU Avg",
-                      "description": "",
-                      "graphType": "pie",
-                      "metricName": "container",
-                      "queryExpression": "sum(rate(container_cpu_usage_seconds_total{pod=~\"{{.name}}\", image!=\"\",container!=\"POD\", container!=\"\", container_name!=\"POD\"}[5m])) by (container)"
-                    },
-                    {
-                      "name": "container_memory_line",
-                      "title": "Memory",
-                      "description": "",
-                      "graphType": "line",
-                      "metricName": "container",
-                      "queryExpression": "sum(rate(container_memory_usage_bytes{pod=~\"{{.name}}\", image!=\"\", container!=\"POD\", container!=\"\", container_name!=\"POD\"}[5m])) by (container)"
-                    },
-                    {
-                      "name": "container_memory_pie",
-                      "title": "Mem Avg",
-                      "description": "",
-                      "graphType": "pie",
-                      "metricName": "container",
-                      "queryExpression": "sum(rate(container_memory_usage_bytes{pod=~\"{{.name}}\", image!=\"\", container!=\"POD\", container!=\"\", container_name!=\"POD\"}[5m])) by (container)"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "groupKind": "deployment",
-              "tabs": ["Golden Signal"],
-              "rows": [
-                 {
-                   "name": "httplatency",
-                   "title": "HTTP Latency",
-                   "tab": "Golden Signal",
-                   "graphs": [
-                     {
-                       "name": "http_200_latency",
-                       "title": "Latency",
-                       "description": "",
-                       "graphType": "line",
-                       "metricName": "pod_template_hash",
-                       "queryExpression": "sum(rate(http_server_requests_seconds_sum {namespace=\"{{.namespace}}\", status=\"200\"} [1m])) by (pod_template_hash)"
-                     }
-                   ]
-                 },
-                 {
-                   "name": "httperrortate",
-                   "title": "HTTP Error Rate",
-                   "tab": "Golden Signal",
-                   "graphs": [
-                     {
-                       "name": "http_error_rate_500",
-                       "title": "HTTP Error 500",
-                       "description": "",
-                       "graphType": "line",
-                       "metricName": "pod_template_hash",
-                       "queryExpression": "sum(rate(http_server_requests_seconds_count {namespace=\"{{.namespace}}\", status=\"500\"} [1m])) by (pod_template_hash)"
-                     },
-                     {
-                       "name": "http_error_rate_400",
-                       "title": "HTTP Error 400",
-                       "description": "",
-                       "graphType": "line",
-                       "metricName": "pod_template_hash",
-                       "queryExpression": "sum(rate(http_server_requests_seconds_count {namespace=\"{{.namespace}}\", status=\"404\"} [1m])) by (pod_template_hash)"
-                     }
-                   ]
-                 },
-                 {
-                   "name": "httptraffic",
-                   "title": "HTTP Traffic",
-                   "tab": "Golden Signal",
-                   "graphs": [
-                     {
-                       "name": "http_traffic",
-                       "title": "Traffic",
-                       "description": "",
-                       "graphType": "line",
-                       "metricName": "pod_template_hash",
-                       "queryExpression": "sum(rate(http_server_requests_seconds_count {namespace=\"{{.namespace}}\"} [1m])) by (pod_template_hash)"
-                     }
-                   ]
-                 },
-                {
-                  "name": "pod",
-                  "title": "Pods",
-                  "tab": "Golden Signal",
-                  "graphs": [
-                    {
-                      "name": "pod_cpu_line",
-                      "title": "CPU",
-                      "description": "",
-                      "graphType": "line",
-                      "metricName": "pod",
-                      "queryExpression": "sum(rate(container_cpu_usage_seconds_total{pod=~\"{{.name}}\", image!=\"\", container!=\"POD\", container!=\"\", container_name!=\"POD\"}[5m])) by (pod)"
-                    },
-                    {
-                      "name": "pod_cpu_pie",
-                      "title": "CPU Avg",
-                      "description": "",
-                      "graphType": "pie",
-                      "metricName": "pod",
-                      "queryExpression": "sum(rate(container_cpu_usage_seconds_total{pod=~\"{{.name}}\", container!=\"POD\", image!=\"\", container!=\"\", container_name!=\"POD\"}[5m])) by (pod)"
-                    },
-                    {
-                      "name": "pod_memory_line",
-                      "title": "Memory",
-                      "description": "",
-                      "graphType": "line",
-                      "metricName": "pod",
-                      "queryExpression": "sum(rate(container_memory_usage_bytes{pod=~\"{{.name}}\", container!=\"POD\", image!=\"\", container!=\"\", container_name!=\"POD\"}[5m])) by (pod)"
-                    },
-                    {
-                      "name": "pod_memory_pie",
-                      "title": "Mem Avg",
-                      "description": "",
-                      "graphType": "pie",
-                      "metricName": "pod",
-                      "queryExpression": "sum(rate(container_memory_usage_bytes{pod=~\"{{.name}}\", container!=\"POD\", image!=\"\", container!=\"\", container_name!=\"POD\"}[5m])) by (pod)"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "groupKind": "rollout",
-              "tabs": ["Golden Signal"],
-              "rows": [
-                 {
-                   "name": "httplatency",
-                   "title": "HTTP Latency",
-                   "tab": "Golden Signal",
-                   "graphs": [
-                     {
-                       "name": "http_200_latency",
-                       "title": "Latency",
-                       "description": "",
-                       "graphType": "line",
-                       "metricName": "rollout_template_hash",
-                       "queryExpression": "sum(rate(http_server_requests_seconds_sum {namespace=\"{{.namespace}}\", status=\"200\"} [1m])) by (rollout_template_hash)"
-                     }
-                   ]
-                 },
-                 {
-                   "name": "httperrortate",
-                   "title": "HTTP Error Rate",
-                   "tab": "Golden Signal",
-                   "graphs": [
-                     {
-                       "name": "http_error_rate_500",
-                       "title": "HTTP Error 500",
-                       "description": "",
-                       "graphType": "line",
-                       "metricName": "rollout_template_hash",
-                       "queryExpression": "sum(rate(http_server_requests_seconds_count {namespace=\"{{.namespace}}\", status=\"500\"} [1m])) by (rollout_template_hash)"
-                     },
-                     {
-                       "name": "http_error_rate_400",
-                       "title": "HTTP Error 400",
-                       "description": "",
-                       "graphType": "line",
-                       "metricName": "rollout_template_hash",
-                       "queryExpression": "sum(rate(http_server_requests_seconds_count {namespace=\"{{.namespace}}\", status=\"404\"} [1m])) by (rollout_template_hash)"
-                     }
-                   ]
-                 },
-                 {
-                   "name": "httptraffic",
-                   "title": "HTTP Traffic",
-                   "tab": "Golden Signal",
-                   "graphs": [
-                     {
-                       "name": "http_traffic",
-                       "title": "Traffic",
-                       "description": "",
-                       "graphType": "line",
-                       "metricName": "rollout_template_hash",
-                       "queryExpression": "sum(rate(http_server_requests_seconds_count {namespace=\"{{.namespace}}\"} [1m])) by (rollout_template_hash)"
-                     }
-                   ]
-                 },
-                {
-                  "name": "pod",
-                  "title": "Pods",
-                  "tab": "Golden Signal",
-                  "graphs": [
-                    {
-                      "name": "pod_cpu_line",
-                      "title": "CPU",
-                      "description": "",
-                      "graphType": "line",
-                      "metricName": "pod",
-                      "queryExpression": "sum(rate(container_cpu_usage_seconds_total{pod=~\"{{.name}}\", image!=\"\", container!=\"POD\", container!=\"\", container_name!=\"POD\"}[5m])) by (pod)"
-                    },
-                    {
-                      "name": "pod_cpu_pie",
-                      "title": "CPU Avg",
-                      "description": "",
-                      "graphType": "pie",
-                      "metricName": "pod",
-                      "queryExpression": "sum(rate(container_cpu_usage_seconds_total{pod=~\"{{.name}}\", container!=\"POD\", image!=\"\", container!=\"\", container_name!=\"POD\"}[5m])) by (pod)"
-                    },
-                    {
-                      "name": "pod_memory_line",
-                      "title": "Memory",
-                      "description": "",
-                      "graphType": "line",
-                      "metricName": "pod",
-                      "queryExpression": "sum(rate(container_memory_usage_bytes{pod=~\"{{.name}}\", container!=\"POD\", image!=\"\", container!=\"\", container_name!=\"POD\"}[5m])) by (pod)"
-                    },
-                    {
-                      "name": "pod_memory_pie",
-                      "title": "Mem Avg",
-                      "description": "",
-                      "graphType": "pie",
-                      "metricName": "pod",
-                      "queryExpression": "sum(rate(container_memory_usage_bytes{pod=~\"{{.name}}\", container!=\"POD\", image!=\"\", container!=\"\", container_name!=\"POD\"}[5m])) by (pod)"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
+          "address": "http://kube-prometheus-stack-prometheus.monitoring.svc:9090"
         }
-      ],
-      "provider":
-      {
-        "Name": "default",
-        "default": true,
-        "address": "http://kube-prometheus-stack-prometheus.monitoring.svc:9090"
       }
-    }
     }
